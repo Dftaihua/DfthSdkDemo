@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="measure_line_color">#45d320</color>
+    <color name="bg_start">#3c3957</color>
+    <color name="bg_center">#066695</color>
+    <color name="bg_end">#302f42</color>
+    <color name="role_back">#00a2cc</color>
+</resources>
