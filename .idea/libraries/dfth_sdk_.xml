@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="dfth_sdk-">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/dfth_sdk/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/dfth_sdk/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
