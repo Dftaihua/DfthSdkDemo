@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="认证"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/oauth"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="获取accessToken"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/accessToken"/>
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/registerPhone"
+            android:text="18610486326"/>
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/registerPassword"
+            android:text="123456"/>
+
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="登录"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/login"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="获取验证码"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/smsCode"/>
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/registerCode"/>
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="注册用户"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/registerUser"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="重置密码验证码"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/resetSmsCode"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="重置密码"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/resetPassword"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="读取oauthInfo"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/readInfo"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="更新用户"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/updateUserInfo"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="读取用户信息"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/readUserInfo"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/info"/>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyBluetooth</string>
+    <string name="ecg_rate">走速：25mm/s</string>
+    <string name="ecg_gain">增益：10mm/mv</string>
+</resources>
