@@ -63,10 +63,16 @@ public class ShowECGActivity extends BaseECGActivity<DfthTwelveECGDevice> implem
         HistoryActivity.startHistory(this,0);
     }
 
+
     @Override
     protected void bindDataListener() {
         if(mDevice != null){
             mDevice.bindDataListener(this);
         }
+    }
+
+    @Override
+    public void startProcessECGResult() {
+
     }
 }

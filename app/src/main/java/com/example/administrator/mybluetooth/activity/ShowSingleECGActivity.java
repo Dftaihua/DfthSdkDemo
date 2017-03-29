@@ -68,4 +68,8 @@ public class ShowSingleECGActivity extends BaseECGActivity<DfthSingleECGDevice> 
         params.height = (int) (DfthSDKApplication.getScreenHeight() * 0.3f);
         parent.addView(waveView, params);
     }
+
+    @Override
+    public void startProcessECGResult() {
+    }
 }

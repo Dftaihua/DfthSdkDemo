@@ -1,7 +1,5 @@
 package com.example.administrator.mybluetooth.activity;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dfth.sdk.DfthSDKManager;
 import com.dfth.sdk.device.DfthBpDevice;
 import com.dfth.sdk.listener.DfthBpDeviceDataListener;
 import com.dfth.sdk.device.DfthDevice;
@@ -24,6 +23,9 @@ import com.dfth.sdk.dispatch.DfthCallBack;
 import com.dfth.sdk.dispatch.DfthResult;
 import com.dfth.sdk.model.bp.BpPlan;
 import com.dfth.sdk.model.bp.BpResult;
+import com.dfth.sdk.model.bp.BpStatus;
+import com.dfth.sdk.permission.DfthPermissionException;
+import com.dfth.sdk.permission.DfthPermissionManager;
 import com.example.administrator.mybluetooth.DfthSDKApplication;
 import com.example.administrator.mybluetooth.R;
 import com.example.administrator.mybluetooth.utils.MeasureListHeightUtils;
@@ -35,7 +37,7 @@ import java.util.List;
  * Created by RuiYu on 2016/10/24.
  */
 public class ShowBPActivity extends AppCompatActivity implements View.OnClickListener,
-        AdapterView.OnItemSelectedListener,DfthBpDeviceDataListener {
+        AdapterView.OnItemSelectedListener, DfthBpDeviceDataListener {
 
     TextView mState;
     TextView currentDevice;
@@ -79,11 +81,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
         day_list = new ArrayList<>();
         night_list = new ArrayList<>();
         day_list.add("30");
-        day_list.add("60");
-        day_list.add("无计划");
-        night_list.add("30");
+//        day_list.add("60");
+//        day_list.add("无计划");
+//        night_list.add("30");
         night_list.add("60");
-        night_list.add("无计划");
+//        night_list.add("无计划");
 
         mState = (TextView) findViewById(R.id.state);
         currentDevice = (TextView) findViewById(R.id.deviceInfo);
@@ -188,7 +190,7 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        night_plan_time = 30;
+                        night_plan_time = 60;
                         break;
                     case 1:
                         night_plan_time = 60;
@@ -219,18 +221,24 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()) {
             //扫描设备
             case R.id.scan:
-//                DfthSDKManager.getManager().getDeviceFactory().getBpDevice("")
-//                        .asyncExecute(new DfthCallBack<DfthBpDevice>() {
-//                            @Override
-//                            public void onResponse(DfthResult<DfthBpDevice> response) {
-//                                Logger.e("deviceMacAddress: " + (response.getReturnData() != null ? response.getReturnData().getMacAddress() : "null"));
-//                                mBpDevice = response.getReturnData();
-//                            }
-//                        });
-                break;
-            //拷贝数据库
-            case R.id.copyDB:
-//                rlt = DfthSDKManager.getManager().copyDbToSdcard();
+                try {
+                    DfthSDKManager.getManager().getDeviceFactory().getBpDevice("")
+                            .asyncExecute(new DfthCallBack<DfthBpDevice>() {
+                                @Override
+                                public void onResponse(DfthResult<DfthBpDevice> response) {
+                                    Logger.e("deviceMacAddress: " + (response.getReturnData() != null ? response.getReturnData().getMacAddress() : "null"));
+                                    mBpDevice = response.getReturnData();
+                                    if (mBpDevice != null) {
+                                        Toast.makeText(ShowBPActivity.this, "连接到设备：" + mBpDevice.getMacAddress(), Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(ShowBPActivity.this, "连接到设备：NULL", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(ShowBPActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 break;
             //连接血压设备
             case R.id.createAndConnect_bp:
@@ -241,6 +249,9 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                             Log.e("dfth_sdk", "connect__status->" + response.getReturnData());
                             if (response.getReturnData()) {
                                 mBpDevice.bindDataListener(ShowBPActivity.this);
+                                Toast.makeText(ShowBPActivity.this, "连接设备成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "连接设备失败！", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -253,6 +264,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("deviceStart->：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "开始测量成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "开始测量失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -264,6 +280,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("deviceStop->：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "结束测量成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "结束测量失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -274,64 +295,51 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("deviceDisconnect->：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "断开设备成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "断开设备失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
                 break;
-//            case R.id.release_bp:
-//                if (mBpDevice != null&& !(mBpDevice.getCurrentState().equals(DfthDeviceState.CONNECTED)
-//                        || mBpDevice.getCurrentState().equals(DfthDeviceState.START_MEASURE))) {
-//                    mBpDevice.release();
-//                    mBpDevice = null;
-//                    bp_List.remove(mDeviceMac);
-//                    mState.setText(mDeviceMac + "血压设备释放");
-//                }else{
-//                    Toast.makeText(this,"请先断开连接",Toast.LENGTH_SHORT).show();
-//                }
-//                break;
             case R.id.printDiscoveredDevice:
-//                mState.setText("扫描到的设备:\n" + DfthSDKManager.getManager().printDiscoveredList());
-//                rlt = DfthReturnCode.Ok;
                 break;
 
             case R.id.printCreateDevice:
-//                mState.setText("创建的设备:\n" + DfthSDKManager.getManager().printDeviceList());
-//                rlt = DfthReturnCode.Ok;
                 break;
             case R.id.getVersion:
-                switch (mCurrentType) {
-                    case DfthDevice.BpDevice:
-                        if (mBpDevice != null) {
-                            mBpDevice.queryDeviceVersion().asyncExecute(new DfthCallBack<String>() {
-                                @Override
-                                public void onResponse(DfthResult<String> response) {
-                                    Logger.e("版本号 = " + response.getReturnData());
-                                }
-                            });
+                if (mBpDevice != null) {
+                    mBpDevice.queryDeviceVersion().asyncExecute(new DfthCallBack<String>() {
+                        @Override
+                        public void onResponse(DfthResult<String> response) {
+                            Logger.e("版本号 = " + response.getReturnData());
+                            Toast.makeText(ShowBPActivity.this, "版本号 = " + response.getReturnData(), Toast.LENGTH_SHORT).show();
                         }
-                        break;
+                    });
                 }
                 break;
             case R.id.setPlan:
                 if (mBpDevice != null) {
                     Logger.e("白天计划时间: " + day_plan_time + "晚上计划时间: " + night_plan_time);
-                    if (day_plan_time == DAY_SPACE_TIME * 60 && night_plan_time == NIGHT_SPACE_TIME * 60) {
-                        Toast.makeText(this, "下发计划失败,不能白天和晚上都无计划", Toast.LENGTH_SHORT).show();
-                    } else {
-                        BpPlan plan = new BpPlan();
-                        plan.setDayInterval(DAY_SPACE_TIME * 60 * 60);
-                        plan.setNightInterval(NIGHT_SPACE_TIME * 60 * 60);
-                        plan.setAlarmTime((short) 30);
-                        plan.setStartTime((int) (System.currentTimeMillis() / 1000));
-
-//                        rlt = mBpDevice.makeMeasurePlan(day_plan_time * 60, night_plan_time * 60, 120);
-                        mBpDevice.createMeasurePlan(plan).asyncExecute(new DfthCallBack<Boolean>() {
-                            @Override
-                            public void onResponse(DfthResult<Boolean> response) {
-                                Logger.e("创建血压计划：" + response.getReturnData());
+                    BpPlan plan = new BpPlan();
+                    plan.setDayInterval(30 * 60);
+                    plan.setNightInterval(60 * 60);
+                    plan.setAlarmTime((short) 30);
+                    plan.setStartTime((int) (System.currentTimeMillis() / 1000), false);
+                    mBpDevice.createMeasurePlan(plan).asyncExecute(new DfthCallBack<Boolean>() {
+                        @Override
+                        public void onResponse(DfthResult<Boolean> response) {
+                            Logger.e("创建血压计划：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "创建血压计划成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "创建血压计划失败！", Toast.LENGTH_SHORT).show();
                             }
-                        });
-                    }
+                        }
+                    });
+//                    }
                 }
                 break;
             case R.id.clearPlan:
@@ -343,6 +351,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("清除血压计划：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "清除血压计划成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "清除血压计划失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -353,6 +366,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("打开语音：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "打开语音成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "打开语音失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -363,6 +381,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Boolean> response) {
                             Logger.e("关闭语音：" + response.getReturnData());
+                            if (response.getReturnData()) {
+                                Toast.makeText(ShowBPActivity.this, "关闭语音成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "关闭语音失败！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -373,6 +396,11 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onResponse(DfthResult<Integer> response) {
                             Logger.e("语音状态：" + response.getReturnData());
+                            if (response.getReturnData() == 0) {
+                                Toast.makeText(ShowBPActivity.this, "语音已打开", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "语音已关闭", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
                 }
@@ -382,10 +410,12 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                     mBpDevice.queryPlanStatus().asyncExecute(new DfthCallBack<BpPlan>() {
                         @Override
                         public void onResponse(DfthResult<BpPlan> response) {
-                            if(response.getReturnData() != null){
-                                Logger.e("设备状态：" + response.getReturnData().toString());
-                            } else{
-                                Logger.e("设备状态：NULL");
+                            if (response.getReturnData() != null) {
+                                Logger.e("设备计划：" + response.getReturnData().toString());
+                                Toast.makeText(ShowBPActivity.this, "设备计划：" + response.getReturnData().toString(), Toast.LENGTH_LONG).show();
+                            } else {
+                                Logger.e("设备计划：NULL");
+                                Toast.makeText(ShowBPActivity.this, "设备计划：NULL", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -396,13 +426,12 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                     mBpDevice.getPlanResult().asyncExecute(new DfthCallBack<ArrayList<BpResult>>() {
                         @Override
                         public void onResponse(DfthResult<ArrayList<BpResult>> response) {
-                            if(response.getReturnData() != null){
+                            if (response.getReturnData() != null) {
                                 ArrayList<BpResult> bpResults = response.getReturnData();
-                                for (int i = 0; i < bpResults.size(); i++){
-                                    Logger.e("results = " + bpResults.get(i).toString());
-                                }
-                            } else{
+                                setListView(bpResults, showResult);
+                            } else {
                                 Logger.e("results = NULL");
+                                Toast.makeText(ShowBPActivity.this, "手动结果为：NULL", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -413,36 +442,33 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
                     mBpDevice.getManualResult().asyncExecute(new DfthCallBack<ArrayList<BpResult>>() {
                         @Override
                         public void onResponse(DfthResult<ArrayList<BpResult>> response) {
-                            if(response.getReturnData() != null){
+                            if (response.getReturnData() != null) {
                                 ArrayList<BpResult> bpResults = response.getReturnData();
-                                for (int i = 0; i < bpResults.size(); i++){
-                                    Logger.e("results = " + bpResults.get(i).toString());
-                                }
-                            } else{
+                                setListView(bpResults, showResult);
+                            } else {
                                 Logger.e("results = NULL");
+                                Toast.makeText(ShowBPActivity.this, "自动结果为：NULL", Toast.LENGTH_LONG).show();
                             }
-                            }
+                        }
                     });
                 }
                 break;
             case R.id.checkDevice:
                 if (mBpDevice != null) {
-                    mBpDevice.queryDeviceStatus().asyncExecute(new DfthCallBack<Boolean>() {
+                    mBpDevice.queryDeviceStatus().asyncExecute(new DfthCallBack<BpStatus>() {
                         @Override
-                        public void onResponse(DfthResult<Boolean> response) {
-                            Logger.e("设备状态：" + response.getReturnData());
+                        public void onResponse(DfthResult<BpStatus> response) {
+                            BpStatus status = response.getReturnData();
+                            if (status != null) {
+                                Toast.makeText(ShowBPActivity.this, status.toString(),Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(ShowBPActivity.this, "设备状态：NULL", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
                 }
                 break;
-//            case R.id.syncTime:
-//                if (mBpDevice != null) {
-//                    rlt = mBpDevice.syncTime(System.currentTimeMillis());
-////                    Toast.makeText(this, rlt == DfthReturnCode.Ok? "同步时间成功" : "同步时间失败", Toast.LENGTH_SHORT).show();
-//                }
-//                break;
         }
-        Toast.makeText(this, rlt == DfthReturnCode.Ok ? ((TextView) v).getText() + "ok" : ((TextView) v).getText() + "ok", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -455,44 +481,26 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
         mCurrentType = Integer.parseInt(str1[1]);
         mDeviceMac = str1[0];
         if (mCurrentType == DfthDevice.BpDevice) {
-            //mBpDevice = (DfthBpDevice) DfthSDKManager.getManager().getDeviceFactory().getBpDevice(mDeviceMac);
             currentDevice.setText("当前设备: " + mDeviceMac);
         }
-
-//        if (mBpDevice != null) {
-//            mState.setText(mBpDevice.getPreState() + "->" + mBpDevice.getCurrentState());
-//        }
-//        if (mCurrentType == DfthDeviceA.BpDevice) {
-//            if (bp_List.contains(mDeviceMac)) {
-//                if (mBpDevice.getCurrentState().equals(DfthDeviceState.CONNECTED)){
-//                    mState.setText(mDeviceMac + " 血压设备已被连接");
-//                }else if (mBpDevice.getCurrentState().equals(DfthDeviceState.START_MEASURE)){
-//                    mState.setText(mDeviceMac + " 血压设备正在测量");
-//                }else {
-//                    mState.setText(mDeviceMac + " 血压设备已被创建");
-//                }
-//            } else {
-//                mState.setText(mDeviceMac);
-//            }
-//        }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         Logger.e("onNothingSelected");
     }
-
-//    @Override
-//    public void handleCurrentPressure(final int pressure) {
-//        Logger.e("当前压力 ：" + pressure);
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                bp_result.setText("当前压力 ：" + pressure);
-//            }
-//        });
-//
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
+            grantResults) {
+        switch (requestCode) {
+            case 100:{
+                DfthPermissionManager.verifyPermission(this,permissions[0],requestCode);
+            }
+            break;
+            default:
+                break;
+        }
+    }
 
 
     public void setListView(List list, ListView listView) {
@@ -502,58 +510,6 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
         MeasureListHeightUtils.setListViewHeightBasedOnChildren(listView, planAdapter);
         planAdapter.notifyDataSetChanged();
     }
-
-//        private boolean isEqual(DBRecordBpPlan userPlan, DBRecordBpPlan devicePlan) {
-//            if (userPlan == null && devicePlan == null) {
-//                Toast.makeText(ShowBPActivity.this, "手机和设备无计划", Toast.LENGTH_SHORT).show();
-//                return true;
-//            } else if ((userPlan == null && devicePlan != null) || (userPlan != null && devicePlan == null)) {
-//                return false;
-//            } else {
-//                if (userPlan.getStartTime() == devicePlan.getStartTime() &&
-//                        userPlan.getDayInterval() == devicePlan.getDayInterval() &&
-//                        userPlan.getNightInterval() == devicePlan.getNightInterval()) {
-//                    Toast.makeText(ShowBPActivity.this, "手机和设备计划一致", Toast.LENGTH_SHORT).show();
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//        }
-//    }
-
-    private void deviceDiscovered(Intent intent) {
-//        String mac = intent.getStringExtra(DfthBroadcast.DeviceMac);
-//        int deviceType = intent.getIntExtra(DfthBroadcast.DeviceType, DfthDevice.Unknown);
-//
-//        if (deviceType == DfthDevice.BpDevice) {
-//            DfthSDKApplication.getInstance().getBp_data_list().add(mac + ", " + deviceType);
-//            if (DfthSDKApplication.getInstance().getBp_data_list().size() == 1) {
-//                mSpinner.setAdapter(arr_adapter);
-//            }
-//            arr_adapter.notifyDataSetChanged();
-//            Toast.makeText(this, "发现设备: " + mac, Toast.LENGTH_SHORT).show();
-//        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //同意权限
-//                    DfthSDKManager.getManager().discoverDevice("", DfthDevice.BpDevice, 20);
-                } else {
-                    //拒绝权限
-                    Logger.e("permission not get");
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     @Override
     public void onDataChanged(Short data) {
         Logger.e("data = " + data);
@@ -566,8 +522,13 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResultData(BpResult result) {
-        if(result != null){
+        if (result != null) {
             Logger.e(result.toString());
         }
+    }
+
+    @Override
+    public void onMeasureException(String s) {
+
     }
 }
