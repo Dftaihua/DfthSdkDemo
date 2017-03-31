@@ -33,12 +33,13 @@ public class ShowSingleECGActivity extends BaseECGActivity<DfthSingleECGDevice> 
             @Override
             public void onResponse(DfthResult<DfthSingleECGDevice> response) {
                 mDevice = response.getReturnData();
-                if(mDevice == null && !BluetoothAdapter.getDefaultAdapter().isEnabled()){
+                if(!BluetoothAdapter.getDefaultAdapter().isEnabled()){
                     BluetoothUtils.startActivityBluetooth(ShowSingleECGActivity.this);
+                }else if(mDevice == null){
                     toast(response.getErrorMessage());
-                }
-                if(mDevice != null){
+                } else{
                     mDevice.bindUserId(TestNetworkService.mUserId);
+                    mDevice.bindStateListener(ShowSingleECGActivity.this);
                     String deviceMessage = String.format("名称:%s,地址:%s",mDevice.getDeviceName(),mDevice.getMacAddress());
                     currentDevice.setText(deviceMessage);
                     toast("搜索到设备" + deviceMessage);
@@ -71,5 +72,6 @@ public class ShowSingleECGActivity extends BaseECGActivity<DfthSingleECGDevice> 
 
     @Override
     public void startProcessECGResult() {
+
     }
 }
