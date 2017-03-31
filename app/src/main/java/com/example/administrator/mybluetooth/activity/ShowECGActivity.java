@@ -44,12 +44,13 @@ public class ShowECGActivity extends BaseECGActivity<DfthTwelveECGDevice> implem
                     @Override
                     public void onResponse(DfthResult<DfthTwelveECGDevice> response) {
                         mDevice = response.getReturnData();
-                        if(mDevice == null && !BluetoothAdapter.getDefaultAdapter().isEnabled()){
+                        if(!BluetoothAdapter.getDefaultAdapter().isEnabled()){
                             BluetoothUtils.startActivityBluetooth(ShowECGActivity.this);
+                        }else if(mDevice == null){
                             toast(response.getErrorMessage());
-                        }
-                        if(mDevice != null){
+                        } else{
                             mDevice.bindUserId(TestNetworkService.mUserId);
+                            mDevice.bindStateListener(ShowECGActivity.this);
                             String deviceMessage = String.format("名称:%s,地址:%s",mDevice.getDeviceName(),mDevice.getMacAddress());
                             currentDevice.setText(deviceMessage);
                             toast("搜索到设备" + deviceMessage);
@@ -62,7 +63,6 @@ public class ShowECGActivity extends BaseECGActivity<DfthTwelveECGDevice> implem
     protected void searchHistory() {
         HistoryActivity.startHistory(this,0);
     }
-
 
     @Override
     protected void bindDataListener() {

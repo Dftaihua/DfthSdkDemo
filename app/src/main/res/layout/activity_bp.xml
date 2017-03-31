@@ -43,47 +43,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="查询版本信息"/>
-
-                    <Button
-                        android:id="@+id/copyDB"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="拷贝数据库"/>
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-
-                    <Button
-                        android:id="@+id/printDiscoveredDevice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="打印扫描到的设备"/>
-
-                    <Button
-                        android:id="@+id/printCreateDevice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="打印创建的设备"/>
-                </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <Spinner
-                        android:id="@+id/spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:minHeight="20dp"
-                        android:minWidth="50dp"/>
 
                     <TextView
                         android:id="@+id/deviceInfo"
@@ -141,8 +105,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-
                     <Button
                         android:id="@+id/createAndConnect_bp"
                         android:layout_width="0dp"
@@ -243,24 +205,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:text="显示内容"/>
-
-                <ListView
-                    android:id="@+id/bp_result_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
+                    android:text="测量结果:"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                    <!--<Button-->
-                        <!--android:id="@+id/syncTime"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_weight="1"-->
-                        <!--android:text="时间同步"/>-->
 
                     <Button
                         android:id="@+id/clearPlan"

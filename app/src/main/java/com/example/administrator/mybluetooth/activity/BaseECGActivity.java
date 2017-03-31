@@ -79,7 +79,6 @@ public abstract class BaseECGActivity<T extends DfthECGDevice> extends AppCompat
                             toast(response.getReturnData() ? "连接设备成功" : response.getErrorMessage());
                             if(response.getReturnData()) {
                                 bindDataListener();
-                                mDevice.bindStateListener(BaseECGActivity.this);
                             }
                         }
                     });

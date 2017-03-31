@@ -6,9 +6,12 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.dfth.mobliemonitor.measure.ecg.ECGProc;
 import com.dfth.sdk.DfthSDKConfig;
 import com.dfth.sdk.DfthSDKManager;
 import com.dfth.sdk.DfthSdkCallBack;
+import com.dfth.sdk.Others.Utils.CrashHandler;
 import com.dfth.sdk.Others.Utils.Logger.LogLevel;
 import com.dfth.sdk.Others.Utils.Logger.Logger;
 
@@ -48,7 +51,6 @@ public class DfthSDKApplication extends Application {
         ecg_data_list = new ArrayList<>();
         bp_data_list = new ArrayList<>();
         printer_data_list = new ArrayList<>();
-
     }
 
     @Override
