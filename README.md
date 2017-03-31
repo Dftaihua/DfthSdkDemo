@@ -8,7 +8,7 @@
 app/libs/dfth_sdk.aar
 
 # 示例使用
-在DfthSdkApplication中添加自己的APPID，APPSecret.(申请方法详见<a href='http://open.dfthlong.com/openplat'></a>)
+在DfthSdkApplication中添加自己的APPID，APPSecret.(申请方法详见http://open.dfthlong.com/openplat)
 
 # lib集成
 1.将app/libs/dfth_sdk.aar拷贝到工程libs/dfth_sdk.aar中，并且在AndroidManifest.xml添加权限
@@ -83,9 +83,9 @@ allprojects {
    DfthLocalDatabase database = DfthSDKManager.getManager().getDatabase();
 ```
 
-#联系我们
+# 联系我们
 
-    公司网址:<a href='http://www.dftaihua.com'></a>
+    公司网址:http://www.dftaihua.com
     公司邮箱:dfth@dftaihua.com
     公司电话:010-67857716
 
