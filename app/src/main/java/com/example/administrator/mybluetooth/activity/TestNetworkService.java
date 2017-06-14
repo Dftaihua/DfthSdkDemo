@@ -143,42 +143,6 @@ public class TestNetworkService extends Activity implements View.OnClickListener
             }
             break;
             case R.id.readUserInfo:{
-
-                DfthSDKManager.getManager().getDfthService().getECGGroupData(mUserId,0,System.currentTimeMillis(),0,1000).asyncExecute(new DfthServiceCallBack<List<ECGResult>>() {
-                    @Override
-                    public void onResponse(DfthServiceResult<List<ECGResult>> response) {
-                        mDialog = new ProgressDialog(TestNetworkService.this);
-                        mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                        mDialog.show();
-                        DfthSDKManager.getManager().getDfthService().downloadECGFile(response.mData.get(0), new ECGFileDownloadListener() {
-                            @Override
-                            public void onProgress(int progress) {
-                                mDialog.setProgress(progress);
-                            }
-
-                            @Override
-                            public void onComplete(boolean success) {
-                                String result = success ? "下载成功" : "下载失败";
-                                Toast.makeText(TestNetworkService.this,result,Toast.LENGTH_SHORT).show();
-                                mDialog.dismiss();
-                            }
-                        });
-                    }
-                });
-//                DfthSDKManager.getManager().getDfthService().getDeviceInfo("a0:e6:f8:4d:c7:eb").asyncExecute(new DfthServiceCallBack<DfthDeviceInfoResponse>() {
-//                    @Override
-//                    public void onResponse(DfthServiceResult<DfthDeviceInfoResponse> response) {
-//
-//                    }
-//                });
-
-//                DfthSDKManager.getManager().getDfthService().deviceBindUser(mUserId,"a0:e6:f8:4d:c7:eb",System.currentTimeMillis()).asyncExecute(new DfthServiceCallBack<Void>() {
-//                    @Override
-//                    public void onResponse(DfthServiceResult<Void> response) {
-//
-//                    }
-//                });
-
             }
             break;
 

@@ -397,6 +397,9 @@ public class ShowBPActivity extends AppCompatActivity implements View.OnClickLis
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title).setItems(strings,null).create().show();
     }
-
+    @Override
+    public void onBpSleep() {
+        //血压计睡眠
+    }
 
 }
