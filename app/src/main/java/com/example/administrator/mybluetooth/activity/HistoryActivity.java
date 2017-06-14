@@ -124,12 +124,13 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
                 dialog.show();
                 DfthSDKManager.getManager().getDfthService().uploadECGData((ECGResult) result, new ECGFileUploadListener() {
                     @Override
-                    public void onProgress(int progress) {
+                    public void onProgress(ECGResult ecgResult, int progress) {
                         dialog.setProgress(progress);
+
                     }
 
                     @Override
-                    public void onComplete(boolean success) {
+                    public void onComplete(ECGResult ecgResult, boolean success) {
                         String result = success ? "上传成功" : "上传失败";
                         Toast.makeText(HistoryActivity.this,result,Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
