@@ -71,10 +71,6 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
             curPos[i].x = leaderWidth;
             curPos[i].y = 0;
         }
-        leaderRect.top = 0;
-        leaderRect.left = 0;
-        leaderRect.right = WaveView.this.getWidth();
-        leaderRect.bottom = WaveView.this.getHeight();
     }
 
     public void addBlock(ECGDataView data) {
@@ -89,8 +85,30 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
         blockDataList.clear();
     }
 
+    private void initWaveView(){
+        Canvas canvas = getHolder().lockCanvas();
+        if (canvas != null) {
+            drawBack(canvas);
+            drawEcgGrid(canvas,
+                    new Rect(0, 0, this.getWidth(), this
+                            .getHeight()));
+        }
+        if (canvas != null) {
+            getHolder().unlockCanvasAndPost(canvas);
+        }
+    }
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+    }
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        initalize(getContext());
+        initWaveView();
+    }
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        initalize(getContext());
+        initWaveView();
     }
 
     private void drawBack(Canvas canvas) {
@@ -108,28 +126,6 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
         p.setColor(DfthSDKApplication.getColorRes(R.color.role_back));
         canvas.drawPaint(p);
     }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (perItemWidth < 1)
-            initalize(getContext());
-        Canvas canvas = holder.lockCanvas(null);
-        if (canvas != null) {
-            drawBack(canvas);
-            drawEcgGrid(canvas,
-                    new Rect(0, 0, this.getWidth(), this
-                            .getHeight()));
-        }
-        if (canvas != null) {
-            holder.unlockCanvasAndPost(canvas);
-        }
-    }
-
-    private synchronized void drawWave(Canvas canvas,
-                                       ECGMeasureData data, float adunit,boolean empty) {
-        drawBlockData(canvas, data, adunit,empty);
-    }
-
     /**
      * 显示某一个数据块
      *
@@ -303,30 +299,22 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
             Logger.e(e, null);
         }
     }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void drawLeader(Canvas canvas, Rect dirt) {
+    private void drawLeader(Canvas canvas) {
         if (canvas == null || baseline == null)
             return;
+        drawBack(canvas);
+        drawEcgGrid(canvas, new Rect(0, 0, WaveView.this.getWidth(), WaveView.this.getHeight()));
         Paint paint = new Paint();
         paint.setTextSize(perItemWidth / 2.2f);
         paint.setColor(Color.TRANSPARENT);
         paint.setStyle(Paint.Style.FILL);
         paint.setTextAlign(Paint.Align.CENTER);
-        if (dirt != null) {
-            canvas.drawRect(dirt, paint);
-        }
         paint.setColor(Color.WHITE);
         for (int i = 0; i < leaders.length; i++) {
             if (leaders[i]) {
                 String text = leaderNames[i];
                 if (baseline != null && baseline.length > i) {
-                    canvas.drawText(text, dirt.width() / 2, baseline[i],
+                    canvas.drawText(text,leaderRect.width() / 2, baseline[i],
                             paint);
                 }
             }
@@ -335,13 +323,7 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
 
     // 心电波形绘制线程
     class UpdateThread extends Thread {
-        boolean pause = false;
-
-        public void pause() {
-            pause = true;
-        }
         public UpdateThread() {
-            reset();
         }
         @Override
         public void run() {
@@ -353,7 +335,7 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
                     Canvas canvas = null;
                     try {
                         ECGDataView data = getBlock();
-                        if (data != null && !pause) {
+                        if (data != null) {
                             dirt.left = (int) curPos[0].x;
                             dirt.right = (int) (curPos[0].x + perItemWidth
                                     * zoomX) + 8;
@@ -361,26 +343,18 @@ public class WaveView extends SurfaceView implements SurfaceHolder.Callback {
                             dirt.bottom = WaveView.this.getHeight();
                             canvas = holder.lockCanvas(dirt);
                             if (canvas != null) {// 绘制波形
-                                drawWave(canvas, data.block, data.adunit,false);
+                                drawBlockData(canvas, data.block, data.adunit,false);
                                 holder.unlockCanvasAndPost(canvas);
                             }
-                            canvas = holder.lockCanvas(leaderRect);
-                            drawBack(canvas);
-                            leaderRect.top = 0;
                             leaderRect.left = 0;
                             leaderRect.right = (int) leaderWidth;
-                            leaderRect.bottom = WaveView.this.getHeight();
-                            drawEcgGrid(canvas, leaderRect);
-                            drawLeader(canvas, leaderRect);
-                            holder.unlockCanvasAndPost(canvas);
-                            dirt2.left = (int) curPos[0].x;
-                            dirt2.right = (int) (curPos[0].x) + 8;
-                            dirt2.top = 0;
-                            dirt2.bottom = WaveView.this.getHeight();
-                            canvas = holder.lockCanvas(dirt2);
-                            drawLineBack(canvas);
+                            leaderRect.top = 0;
+                            leaderRect.bottom = getHeight();
+                            canvas = holder.lockCanvas(leaderRect);
+                            drawLeader(canvas);
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
                     } finally {
                         if (canvas != null) {
                             holder.unlockCanvasAndPost(canvas);
