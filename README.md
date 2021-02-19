@@ -78,15 +78,44 @@ allprojects {
 ```java
    DfthService service = DfthSDKManager.getManager().getDfthService();
 ```
-7.数据查询
+8.数据查询
 ```java
    DfthLocalDatabase database = DfthSDKManager.getManager().getDatabase();
 ```
-
+9.心电过程数据(EcgDataTransmitted)
+   <br/>getEcgData()获取到原始心电数据ECGMeasureData
+   <br/>getDatData()获取到心拍分析数据ECGStroageResult[]
+   <br/>getSportData()获取到身体状态数据EcgSportData[]
+   <br/>getHeartRate()获取当前心率值(0-255)
+   <br/>getStartTime()获取记录开始测量时间(格林威治时间)
+   
+   原始数据ECGMeasueData
+   <br/>chan()返回导联数 默认为1
+   <br/>pts()返回心电个数
+   <br/>adunit() 返回ad量化电平
+   <br/>sampling() 返回数据采样率
+   <br/>getData() 返回心电电压值 short
+   
+   心拍数据ECGStroageResult
+   <br/>_Peak 心拍R波的位置
+   <br/>_RR   心拍的RR间期
+   <br/>_hr   心拍的平均心率
+   
+   身体状态数据EcgSportData
+   <br/>getX() x加速度值
+   
+10.心电结果数据(ECGResult)
+   <br/>getAverHr()返回平均心率
+   <br/>getSpCount()返回房早次数
+   <br/>getPvcCount()返回室早次数
+   <br/> getMinHr()返回最小心率
+   <br/>getMaxHr()返回最大心率
+   <br/>getBeatCount()返回心拍总数
+   <br/>getPath()返回心电文件路径
+   
+   
 # 联系我们
 
     公司网址:http://www.dftaihua.com
     公司邮箱:dfth@dftaihua.com
     公司电话:010-67857716
-
-
